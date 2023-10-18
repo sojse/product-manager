@@ -49,7 +49,7 @@ function SearchProduct({ product, onSearch, onDelete }) {
       </div>
       <div>
         {searching && Object.keys(product).length === 0 && (
-          <span className="text-1x1 font-bold m-4">Produkt finns ej</span>
+          <span className="text-1x1 font-bold m-4">Product not found</span>
         )}
         {Object.keys(product).length !== 0 && searching && (
           <Product product={product} onDelete={onDelete} />

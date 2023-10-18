@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Menu from "./components/Menu";
 import ProductForm from "./components/ProductForm";
@@ -7,17 +7,7 @@ import "./App.css";
 
 export default function App() {
   const [informationMessage, setInformationMessage] = useState("");
-  const [products, setProducts] = useState([]);
   const [foundProduct, setFoundProduct] = useState({});
-
-  useEffect(() => {
-
-    fetch("https://localhost:8000/products")
-      .then(resp => resp.json())
-      .then(products => setProducts(products))
-      .catch(err => console.log(err));
-
-  }, []);
 
   const onAdd = (product) => {
     
@@ -28,15 +18,23 @@ export default function App() {
       },
       body: JSON.stringify(product),
     })
-    .then(resp => resp.json())
-    .then(data => setProducts([...products, data]));
-    setMessage(`${product.name} was added`);
+    .then(response => {
+      if(!response.ok) {
+        throw new Error();
+      }
+      response.json()
+    })
+    .then(data => {
+      setMessage(`${product.name} was added`);
+    })
+    .catch(error => {
+      setMessage("Couldn't add product")
+    })
+    
 
   }
 
   const onUpdate = (product) => {
-    console.log(JSON.stringify(product));
-    
     fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
       method: "put",
       headers: {
@@ -44,24 +42,33 @@ export default function App() {
       },
       body: JSON.stringify(product),
     })
-    .then(resp => setMessage(`${product.name} was updated`))
+    .then(response => {
+      if(!response.ok) {
+        throw new Error();
+      }
+      setMessage(`${product.name} was updated`)
+    })
+    .catch(error => {
+      setMessage("Couldn't update product")
+    })
     
     
   }
 
-  const onSearch = (stockKeepingUnit) => {
+  const onSearch = async (stockKeepingUnit) => {
+    
     fetch(`https://localhost:8000/products/${stockKeepingUnit}`)
-      .then((resp) => {
-        if (!resp.ok) {
-          // Handle non-successful response (e.g., 404)
-          setFoundProduct({});
-          throw new Error(`Product not found: ${resp.status}`);
+      .then((response) => {
+        
+        if (!response.ok) {
+          throw new Error();
         }
-        return resp.json();
+
+        return response.json();
       })
       .then((product) => setFoundProduct(product))
-      .catch((err) => {
-        console.error(err);
+      .catch((error) => {
+        setFoundProduct({});
       });
   };
 
@@ -76,19 +83,21 @@ export default function App() {
       return;
     }
     
-    try {
-      await fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
+      fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
         method: "delete",
+      })
+      .then(response => {
+        if(!response.ok) {
+          throw new Error()
+        }
+
+        setFoundProduct({});
+        setMessage(`${product.name} was deleted`);
+
+      })
+      .catch ((error) => {
+        setMessage("Couldn't delete product");
       });
-      const newProducts = products.filter((x) => x.id !== product.id);
-
-      setProducts(newProducts);
-      setFoundProduct({});
-      setMessage(`${product.name} was deleted`);
-
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
   };
 
   const setMessage = (message) => {
@@ -106,7 +115,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<></>} />
         <Route path="/add-product" element={<ProductForm onSubmit={onAdd}/>} />
-        <Route path="/add-product/:sku" element={<ProductForm onSumbit={onUpdate}/>} />
+        <Route path="/add-product/:sku" element={<ProductForm onSubmit={onUpdate}/>} />
         <Route path="/search-product" element={<SearchProduct onSearch={onSearch} onDelete={onDelete} product={foundProduct}/>} />
 
       </Routes>

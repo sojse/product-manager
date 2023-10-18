@@ -2,7 +2,7 @@ import Button from "./Button.jsx";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-function ProductForm({ onSumbit }) {
+function ProductForm({ onSubmit }) {
   const params = useParams();
 
   const [form, setForm] = useState({
@@ -74,7 +74,7 @@ function ProductForm({ onSumbit }) {
 
     var confirmationMessage = "Are you sure you want to add " + form.name + "?";
 
-    if (params) {
+    if (params.sku) {
       confirmationMessage =
         "Are you sure you want to update " + form.name + "?";
     }
@@ -85,7 +85,7 @@ function ProductForm({ onSumbit }) {
       return;
     }
 
-    onSumbit(form);
+    onSubmit(form);
     navigate("/");
   }
 
@@ -95,7 +95,7 @@ function ProductForm({ onSumbit }) {
         <Button color={"light"}> Back to home</Button>
       </Link>
       <h2 className="text-2xl font-bold m-4">
-        {params ? "Update Product" : "Add Product"}
+        {params.sku ? "Update Product" : "Add Product"}
       </h2>
 
       <form className="m-6" onSubmit={handleSubmit}>
@@ -123,7 +123,7 @@ function ProductForm({ onSumbit }) {
               }`}
               placeholder="Enter SKU"
               name="stockKeepingUnit"
-              value={params ? params.sku : form.stockKeepingUnit}
+              value={params.sku ? params.sku : form.stockKeepingUnit}
               onChange={inputChange}
             />
           </div>
@@ -182,7 +182,7 @@ function ProductForm({ onSumbit }) {
               : "disabled"
           }`}
         >
-          {params ? "Update" : "Add"}
+          {params.sku ? "Update" : "Add"}
         </Button>
       </form>
     </div>
