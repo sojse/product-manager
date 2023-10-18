@@ -1,18 +1,25 @@
 import { Link } from "react-router-dom";
 import Button from "./Button.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Product from "./Product.jsx";
 
-function SearchProduct({ onSearch, onDelete }) {
+function SearchProduct({ product, onSearch, onDelete }) {
   const [sku, setSku] = useState("");
-  const [productNotFound, setProductNotFound] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   function inputChange(e) {
     setSku(e.target.value);
   }
 
+  useEffect(() => {
+    setSearching(false);
+  }, []);
+
   function handleSubmit(e) {
     e.preventDefault();
+
+    setSearching(true);
+
     onSearch(sku);
   }
 
@@ -35,14 +42,17 @@ function SearchProduct({ onSearch, onDelete }) {
               onChange={inputChange}
             />
           </div>
-          <Button color="bright">Search</Button>
+          <Button color="bright" disabled={searching}>
+            Search
+          </Button>
         </form>
       </div>
       <div>
-        {productNotFound ? (
+        {searching && Object.keys(product).length === 0 && (
           <span className="text-1x1 font-bold m-4">Produkt finns ej</span>
-        ) : (
-          <Product onDelete={onDelete} />
+        )}
+        {Object.keys(product).length !== 0 && searching && (
+          <Product product={product} onDelete={onDelete} />
         )}
       </div>
     </div>

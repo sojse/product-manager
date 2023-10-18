@@ -2,18 +2,18 @@ import Button from "./Button.jsx";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function AddProductForm({ onAdd }) {
+function ProductForm({ onAdd }) {
   const [form, setForm] = useState({
-    productName: "",
-    sku: "",
+    name: "",
+    stockKeepingUnit: "",
     description: "",
     imageUrl: "",
     price: "",
   });
 
   const [formValid, setFormValid] = useState({
-    productName: false,
-    sku: false,
+    name: false,
+    stockKeepingUnit: false,
     description: false,
     imageUrl: false,
     price: false,
@@ -71,7 +71,7 @@ function AddProductForm({ onAdd }) {
     e.preventDefault();
 
     var confirmed = window.confirm(
-      "Are you sure you want to add " + form.productName + "?"
+      "Are you sure you want to add " + form.name + "?"
     );
 
     if (!confirmed) {
@@ -96,11 +96,11 @@ function AddProductForm({ onAdd }) {
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
-                formValid.productName ? "border-green-600" : ""
+                formValid.name ? "border-green-600" : ""
               }`}
               placeholder="Enter product name"
-              name="productName"
-              value={form.productName}
+              name="name"
+              value={form.name}
               onChange={inputChange}
             />
           </div>
@@ -110,11 +110,11 @@ function AddProductForm({ onAdd }) {
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
-                formValid.sku ? "border-green-600" : ""
+                formValid.stockKeepingUnit ? "border-green-600" : ""
               }`}
               placeholder="Enter SKU"
-              name="sku"
-              value={form.sku}
+              name="stockKeepingUnit"
+              value={form.stockKeepingUnit}
               onChange={inputChange}
             />
           </div>
@@ -164,8 +164,8 @@ function AddProductForm({ onAdd }) {
 
         <Button
           color={`${
-            formValid.productName &&
-            formValid.sku &&
+            formValid.name &&
+            formValid.stockKeepingUnit &&
             formValid.description &&
             formValid.imageUrl &&
             formValid.price
@@ -180,4 +180,4 @@ function AddProductForm({ onAdd }) {
   );
 }
 
-export default AddProductForm;
+export default ProductForm;
