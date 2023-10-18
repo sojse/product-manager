@@ -34,6 +34,21 @@ export default function App() {
 
   }
 
+  const onUpdate = (product) => {
+    console.log(JSON.stringify(product));
+    
+    fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(product),
+    })
+    .then(resp => setMessage(`${product.name} was updated`))
+    
+    
+  }
+
   const onSearch = (stockKeepingUnit) => {
     fetch(`https://localhost:8000/products/${stockKeepingUnit}`)
       .then((resp) => {
@@ -90,8 +105,10 @@ export default function App() {
       <Menu />
       <Routes>
         <Route path="/" element={<></>} />
-        <Route path="/add-product" element={<ProductForm onAdd={onAdd}/>} />
+        <Route path="/add-product" element={<ProductForm onSubmit={onAdd}/>} />
+        <Route path="/add-product/:sku" element={<ProductForm onSumbit={onUpdate}/>} />
         <Route path="/search-product" element={<SearchProduct onSearch={onSearch} onDelete={onDelete} product={foundProduct}/>} />
+
       </Routes>
       <section>
         <div className="text-2xl font-bold m-4 text-center">{informationMessage}</div>

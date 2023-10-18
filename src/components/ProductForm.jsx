@@ -1,8 +1,10 @@
 import Button from "./Button.jsx";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-function ProductForm({ onAdd }) {
+function ProductForm({ onSumbit }) {
+  const params = useParams();
+
   const [form, setForm] = useState({
     name: "",
     stockKeepingUnit: "",
@@ -70,15 +72,20 @@ function ProductForm({ onAdd }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    var confirmed = window.confirm(
-      "Are you sure you want to add " + form.name + "?"
-    );
+    var confirmationMessage = "Are you sure you want to add " + form.name + "?";
+
+    if (params) {
+      confirmationMessage =
+        "Are you sure you want to update " + form.name + "?";
+    }
+
+    var confirmed = window.confirm(confirmationMessage);
 
     if (!confirmed) {
       return;
     }
 
-    onAdd(form);
+    onSumbit(form);
     navigate("/");
   }
 
@@ -87,7 +94,9 @@ function ProductForm({ onAdd }) {
       <Link to="/">
         <Button color={"light"}> Back to home</Button>
       </Link>
-      <h2 className="text-2xl font-bold m-4">Add Product</h2>
+      <h2 className="text-2xl font-bold m-4">
+        {params ? "Update Product" : "Add Product"}
+      </h2>
 
       <form className="m-6" onSubmit={handleSubmit}>
         <div>
@@ -114,7 +123,7 @@ function ProductForm({ onAdd }) {
               }`}
               placeholder="Enter SKU"
               name="stockKeepingUnit"
-              value={form.stockKeepingUnit}
+              value={params ? params.sku : form.stockKeepingUnit}
               onChange={inputChange}
             />
           </div>
@@ -173,7 +182,7 @@ function ProductForm({ onAdd }) {
               : "disabled"
           }`}
         >
-          Submit
+          {params ? "Update" : "Add"}
         </Button>
       </form>
     </div>
