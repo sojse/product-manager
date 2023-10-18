@@ -18,11 +18,6 @@ function Menu() {
             Search Product
           </Link>
         </li>
-        <li>
-          <Link to="" className="hover:text-gray-300">
-            Quit
-          </Link>
-        </li>
       </ul>
     </div>
   );
