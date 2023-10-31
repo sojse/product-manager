@@ -1,9 +1,11 @@
 import Button from "./Button.jsx";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useProduct from "../hooks/useProduct.js";
 
-function ProductForm({ onSubmit }) {
+function ProductForm() {
   const params = useParams();
+  const { onAdd, onUpdate } = useProduct();
 
   const [form, setForm] = useState({
     name: "",
@@ -72,20 +74,12 @@ function ProductForm({ onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    var confirmationMessage = "Are you sure you want to add " + form.name + "?";
-
     if (params.sku) {
-      confirmationMessage =
-        "Are you sure you want to update " + form.name + "?";
+      onUpdate(form);
+    } else {
+      onAdd(form);
     }
 
-    var confirmed = window.confirm(confirmationMessage);
-
-    if (!confirmed) {
-      return;
-    }
-
-    onSubmit(form);
     navigate("/");
   }
 
@@ -101,7 +95,9 @@ function ProductForm({ onSubmit }) {
       <form className="m-6" onSubmit={handleSubmit}>
         <div>
           <div className="mb-3">
-            <label className="block mb-2">Product Name</label>
+            <label htmlFor="name" className="block mb-2">
+              Product Name
+            </label>
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
@@ -109,13 +105,16 @@ function ProductForm({ onSubmit }) {
               }`}
               placeholder="Enter product name"
               name="name"
+              id="name"
               value={form.name}
               onChange={inputChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="block mb-2">Stock Keeping Unit (SKU)</label>
+            <label htmlFor="stockKeepingUnit" className="block mb-2">
+              Stock Keeping Unit (SKU)
+            </label>
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
@@ -123,13 +122,16 @@ function ProductForm({ onSubmit }) {
               }`}
               placeholder="Enter SKU"
               name="stockKeepingUnit"
+              id="stockKeepingUnit"
               value={params.sku ? params.sku : form.stockKeepingUnit}
               onChange={inputChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="block mb-2">Description</label>
+            <label htmlFor="description" className="block mb-2">
+              Description
+            </label>
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
@@ -137,13 +139,16 @@ function ProductForm({ onSubmit }) {
               }`}
               placeholder="Enter product description"
               name="description"
+              id="description"
               value={form.description}
               onChange={inputChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="block mb-2">Image URL</label>
+            <label htmlFor="imageUrl" className="block mb-2">
+              Image URL
+            </label>
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
@@ -151,13 +156,16 @@ function ProductForm({ onSubmit }) {
               }`}
               placeholder="Enter image URL"
               name="imageUrl"
+              id="imageUrl"
               value={form.imageUrl}
               onChange={inputChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="block mb-2">Price</label>
+            <label htmlFor="price" className="block mb-2">
+              Price
+            </label>
             <input
               type="text"
               className={`border-2 rounded-md p-1 ${
@@ -165,6 +173,7 @@ function ProductForm({ onSubmit }) {
               }`}
               placeholder="Enter price"
               name="price"
+              id="price"
               value={form.price}
               onChange={inputChange}
             />

@@ -1,16 +1,25 @@
 import Button from "./Button.jsx";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth.js";
 
 function Product({ product, onDelete }) {
   const navigate = useNavigate();
+  const { auth } = useAuth();
 
   function handleDelete(e) {
+    var confirmed = window.confirm(
+      "Are you sure you want to delete " + product.name + "?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
     onDelete(product);
     navigate("/");
   }
 
   function handleUpdate(e) {
-    navigate(`/add-product/${product.stockKeepingUnit}`);
+    navigate(`/product-form/${product.stockKeepingUnit}`);
   }
 
   return (
@@ -33,12 +42,16 @@ function Product({ product, onDelete }) {
           Price: ${product.price}
         </span>
 
-        <Button handleSubmit={handleDelete} color={"dark"}>
-          Delete
-        </Button>
-        <Button handleSubmit={handleUpdate} color={"bright"}>
-          Update
-        </Button>
+        {auth.roles.includes("Administrator") && (
+          <Button handleSubmit={handleDelete} color={"dark"}>
+            Delete
+          </Button>
+        )}
+        {auth.roles.includes("Administrator") && (
+          <Button handleSubmit={handleUpdate} color={"bright"}>
+            Update
+          </Button>
+        )}
       </div>
     </div>
   );

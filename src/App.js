@@ -1,127 +1,45 @@
-import React, { useState } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Menu from "./components/Menu";
 import ProductForm from "./components/ProductForm";
-import SearchProduct from "./components/SearchProduct";
 import "./App.css";
+import AddCategoryForm from "./components/AddCategoryForm";
+import AddProductToCategory from "./components/AddProductToCategory";
+import CategoriesTable from "./components/CategoriesTable";
+import Login from "./components/LoginForm";
+import UpdateAndDeleteProduct from "./components/UpdateAndDeleteProduct";
+import Missing from "./components/Missing";
+import Layout from "./components/Layout";
+import RequireAuth from "./components/RequireAuth";
+import InformationMessageView from "./components/InformationMessageView";
 
 export default function App() {
-  const [informationMessage, setInformationMessage] = useState("");
-  const [foundProduct, setFoundProduct] = useState({});
-
-  const onAdd = (product) => {
-    
-    fetch("https://localhost:8000/products", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(product),
-    })
-    .then(response => {
-      if(!response.ok) {
-        throw new Error();
-      }
-      response.json()
-    })
-    .then(data => {
-      setMessage(`${product.name} was added`);
-    })
-    .catch(error => {
-      setMessage("Couldn't add product")
-    })
-    
-
-  }
-
-  const onUpdate = (product) => {
-    fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
-      method: "put",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(product),
-    })
-    .then(response => {
-      if(!response.ok) {
-        throw new Error();
-      }
-      setMessage(`${product.name} was updated`)
-    })
-    .catch(error => {
-      setMessage("Couldn't update product")
-    })
-    
-    
-  }
-
-  const onSearch = async (stockKeepingUnit) => {
-    
-    fetch(`https://localhost:8000/products/${stockKeepingUnit}`)
-      .then((response) => {
-        
-        if (!response.ok) {
-          throw new Error();
-        }
-
-        return response.json();
-      })
-      .then((product) => setFoundProduct(product))
-      .catch((error) => {
-        setFoundProduct({});
-      });
-  };
-
-
-  const onDelete = async (product)  => {
-
-    var confirmed = window.confirm(
-      "Are you sure you want to delete " + product.name + "?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-    
-      fetch(`https://localhost:8000/products/${product.stockKeepingUnit}`, {
-        method: "delete",
-      })
-      .then(response => {
-        if(!response.ok) {
-          throw new Error()
-        }
-
-        setFoundProduct({});
-        setMessage(`${product.name} was deleted`);
-
-      })
-      .catch ((error) => {
-        setMessage("Couldn't delete product");
-      });
-  };
-
-  const setMessage = (message) => {
-    setInformationMessage(message);
-
-    setTimeout(() => {
-      setInformationMessage("");
-    }, 2000)
-  }
-
 
   return (
     <>
       <Menu />
       <Routes>
-        <Route path="/" element={<></>} />
-        <Route path="/add-product" element={<ProductForm onSubmit={onAdd}/>} />
-        <Route path="/add-product/:sku" element={<ProductForm onSubmit={onUpdate}/>} />
-        <Route path="/search-product" element={<SearchProduct onSearch={onSearch} onDelete={onDelete} product={foundProduct}/>} />
+        {/* public routes */}
+        <Route path="/" element={<Layout/>} />
+        <Route index element={<InformationMessageView />} />
+        <Route path="/login" element={<Login/>} />
 
+        {/* routes accessed with login */}
+        <Route element={<RequireAuth allowedRoles={["User", "Administrator"]}/>} >
+          <Route path="/search-product" element={<UpdateAndDeleteProduct />} />
+          <Route path="/categories-table" element={<CategoriesTable/>} />
+        </Route>
+        
+        {/* routes accessed with admin role */}
+        <Route element={<RequireAuth allowedRoles={["Administrator"]}/>} >
+          <Route path="/product-form" element={<ProductForm/>} />
+          <Route path="/product-form/:sku" element={<ProductForm/>} />        
+          <Route path="/add-category" element={<AddCategoryForm />} />
+          <Route path="/add-product-to-category" element={<AddProductToCategory/>} />
+        </Route>
+        
+        <Route path="*" element={<Missing/>} />
       </Routes>
-      <section>
-        <div className="text-2xl font-bold m-4 text-center">{informationMessage}</div>
-      </section>
     </>
 
   );
