@@ -9,7 +9,7 @@ function ProductForm() {
 
   const [form, setForm] = useState({
     name: "",
-    stockKeepingUnit: "",
+    stockKeepingUnit: params.sku ? params.sku : "",
     description: "",
     imageUrl: "",
     price: "",
@@ -17,7 +17,7 @@ function ProductForm() {
 
   const [formValid, setFormValid] = useState({
     name: false,
-    stockKeepingUnit: false,
+    stockKeepingUnit: params.sku ? true : false,
     description: false,
     imageUrl: false,
     price: false,
@@ -64,7 +64,7 @@ function ProductForm() {
 
         setFormValid({
           ...formValid,
-          [name]: e.target.value.length > 0,
+          [name]: value.length > 0,
         });
 
         break;
